@@ -1,11 +1,10 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { User } from '../../user/types/user.type';
 
-
 @ObjectType()
 export class Post {
   id!: string;
-  @Field(() => User,{description: 'Author of the post',nullable: true})
+  @Field(() => User, { description: 'Author of the post', nullable: true })
   user!: User;
   @Field()
   title!: string;
@@ -17,7 +16,7 @@ export class Post {
   category!: string[];
   @Field()
   slug!: string;
-  @Field()  
+  @Field()
   image!: string;
   @Field()
   postViews!: number;

@@ -16,8 +16,7 @@ export class UserResolver {
   //   getUser({
   //     username
   //     isAdmin
-  //     ... and other feild you want 
+  //     ... and other feild you want
   //   })
   // }
 }
-

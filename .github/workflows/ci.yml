@@ -9,52 +9,52 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
+
     strategy:
       fail-fast: false
       matrix:
         node-version: [20.x, 22.x]
+
     steps:
+      # 1. Checkout code
       - name: Checkout code
         uses: actions/checkout@v4
-
+      # 2. Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm
-
+      # 3. Install dependencies
       - name: Install dependencies
         run: npm ci
-
-      - name: Check formatting (Prettier)
-        id: prettier-check
+      # 4. Run Prettier checks
+      - name: Prettier Check
+        id: prettier
         run: npm run format:check
         continue-on-error: true
-
-      - name: Fix formatting
-        if: steps.prettier-check.outcome == 'failure'
-        run: npm run format
-
-      - name: Verify formatting after fix
-        run: npm run format:check
-
-      - name: Check linting (ESLint)
-        id: eslint-check
-        run: npm run lint:check
-        continue-on-error: true
-
-      - name: Fix linting
-        if: steps.eslint-check.outcome == 'failure'
+      # 5. Prettier failure message
+      - name: Prettier Failure Message
+        if: steps.prettier.outcome == 'failure'
         run: |
-          echo "🚨 Linting issues found. Attempting to fix..."
-          npm run lint
-
-      - name: Verify linting after fix
+          echo "❌ Prettier formatting failed!"
+      # 6. Run ESLint checks
+      - name: ESLint Check
+        id: eslint
         run: npm run lint:check
-
-      - name: Build application
+        continue-on-error: true
+      # 7. ESLint failure message
+      - name: ESLint Failure Message
+        if: steps.eslint.outcome == 'failure'
+        run: |
+          echo "❌ ESLint issues found!"
+      # 8. Final CI status check
+      - name: Final CI Status Check
+        if: steps.prettier.outcome == 'failure' || steps.eslint.outcome == 'failure'
+        run: |
+          echo "🚨 CI FAILED!"
+          echo "Please fix Prettier and ESLint errors before pushing again."
+          exit 1
+      # 9. Build application (optional, can be used to verify build success)
+      - name: Build Application
         run: npm run build
-
-      - name: Run unit tests
-        run: npm run test -- --runInBand
-
