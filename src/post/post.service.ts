@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { PostDocument } from './schema/post.schema';
+import { CreatePostInput } from './types/create-post.input';
+import { CurrentUserPayload } from 'src/common/types/current-user.type';
 
 @Injectable()
 export class PostService {
@@ -17,6 +19,15 @@ export class PostService {
       ...post.toObject(),
       content: this.limitContent(post.content, wordLimit), // Limit the content based on the provided word limit
     }));
+  }
+
+  //Create Post
+  async createPost(input: CreatePostInput, user: CurrentUserPayload) {
+    const post = new this.postModel({
+      ...input,
+      authorEmail: user.email,
+    });
+    return post.save();
   }
 
   private limitContent(content: string, wordLimit?: number) {

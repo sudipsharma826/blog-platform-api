@@ -1,10 +1,15 @@
-import { Args, Parent, ResolveField, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { PostService } from './post.service';
 import { Query } from '@nestjs/graphql';
 import { Post } from './types/post.type';
 import { User } from '../user/types/user.type';
 import { UserService } from '../user/user.service';
 import { GetPostsArgs } from './types/post.args';
+import { UseGuards } from '@nestjs/common';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { AuthGuard } from 'src/common/guards/auth.guard';
+import { CreatePostInput } from './types/create-post.input';
+import { CurrentUserPayload } from 'src/common/types/current-user.type';
 
 @Resolver(() => Post)
 export class PostResolver {
@@ -18,10 +23,15 @@ export class PostResolver {
     return this.postService.getPosts(args.wordLimit);
   }
 
-  // Mutation
-  async createPost(){
-    // Implementation for creating a post
-  }
+  //Muation
+  @UseGuards(AuthGuard)
+@Mutation(() => Post)
+async createPost(
+  @Args('input') input: CreatePostInput,
+  @CurrentUser() user : CurrentUserPayload,
+) {
+  return this.postService.createPost(input, user);
+}
 
 
 
