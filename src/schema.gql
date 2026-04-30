@@ -43,5 +43,27 @@ type Post {
 
 type Query {
   getUser: [User!]!
-  getPosts: [Post!]!
+  getPosts(filter: PostQueryFilter): [Post!]!
+  getPostBySlug(slug: String!): Post!
+}
+
+input PostQueryFilter {
+  search: String
+  category: String
+  isFeatured: Boolean
+  wordLimit: Int
+}
+
+type Mutation {
+  createPost(input: CreatePostInput!): Post!
+}
+
+input CreatePostInput {
+  title: String!
+  subtitle: String!
+  content: String!
+  isFeatured: Boolean!
+  status: String!
+  categories: [String!]!
+  image: String!
 }
