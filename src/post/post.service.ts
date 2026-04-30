@@ -10,19 +10,22 @@ export class PostService {
     private postModel: Model<PostDocument>,
   ) {}
 
-  async getPosts() {
+  async getPosts(wordLimit?: number) {
     const posts = await this.postModel.find();
 
     return posts.map((post) => ({
       ...post.toObject(),
-      content: this.limitContent(post.content, 20), // Limit the content to 20 characters for the post list view
+      content: this.limitContent(post.content, wordLimit), // Limit the content based on the provided word limit
     }));
   }
 
-  private limitContent(content: string, limit: number) {
+  private limitContent(content: string, wordLimit?: number) {
     if (!content) return '';
-    return content.length > limit
-      ? content.substring(0, limit) + '...'
-      : content;
+    if (wordLimit === undefined) return content;
+
+    const words = content.split(' ');
+    if (words.length <= wordLimit) return content;
+
+    return words.slice(0, wordLimit).join(' ') + '...';
   }
 }
