@@ -11,10 +11,10 @@ import { Post } from './types/post.type';
 import { User } from '../user/types/user.type';
 import { UserService } from '../user/user.service';
 import { UseGuards } from '@nestjs/common';
-import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { AuthGuard } from 'src/common/guards/auth.guard';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { AuthGuard } from '../common/guards/auth.guard';
 import { CreatePostInput } from './types/create-post.input';
-import { CurrentUserPayload } from 'src/common/types/current-user.type';
+import { CurrentUserPayload } from '../common/types/current-user.type';
 import { PostQueryFilter } from './types/postQueryFilter.type';
 
 @Resolver(() => Post)

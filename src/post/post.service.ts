@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { PostDocument } from './schema/post.schema';
 import { CreatePostInput } from './types/create-post.input';
-import { CurrentUserPayload } from 'src/common/types/current-user.type';
+import { CurrentUserPayload } from '../common/types/current-user.type';
 import { PostQueryFilter } from './types/postQueryFilter.type';
 
 @Injectable()

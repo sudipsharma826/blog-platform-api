@@ -2,10 +2,11 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
-import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { ApolloDriver } from '@nestjs/apollo';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { UserModule } from './user/user.module';
 import { PostModule } from './post/post.module';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -22,16 +23,29 @@ import { PostModule } from './post/post.module';
       }),
     }),
     //setup the graphql module
-    GraphQLModule.forRoot<ApolloDriverConfig>({
+    GraphQLModule.forRootAsync({
       driver: ApolloDriver,
-      playground: false,
-      plugins: [ApolloServerPluginLandingPageLocalDefault()],
-      autoSchemaFile: 'src/schema.gql',
-      context: ({ req }: { req: Request }) => ({ req }),
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        introspection: true,
+        plugins: [ApolloServerPluginLandingPageLocalDefault()],
+        autoSchemaFile: 'src/schema.gql',
+        cors: {
+          origin:
+            config
+              .get<string>('CLIENT_URL')
+              ?.split(',')
+              .map((url) => url.trim()) || [],
+          credentials: config.get<string>('NODE_ENV') === 'production', // only true in production
+          allowedHeaders: ['Content-Type', 'Authorization'],
+          methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'PATCH', 'DELETE'],
+        },
+        context: ({ req }: { req: Request }) => ({ req }),
+      }),
     }),
     UserModule,
     PostModule,
   ],
-  controllers: [],
+  controllers: [AppController],
 })
 export class AppModule {}
