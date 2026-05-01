@@ -25,7 +25,7 @@ import { AppController } from './app.controller';
     //setup the graphql module
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      playground: false,
+      introspection: true,
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
       autoSchemaFile: 'src/schema.gql',
       context: ({ req }: { req: Request }) => ({ req }),
